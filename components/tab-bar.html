@@ -1,0 +1,42 @@
+<div class="tab-bar">
+  <a href="star-ring.html" class="tab-item" id="tab-star-ring">
+    <i class="fas fa-circle-notch"></i>
+    <span>星环</span>
+  </a>
+  <a href="observatory.html" class="tab-item" id="tab-observatory">
+    <i class="fas fa-telescope"></i>
+    <span>观察室</span>
+  </a>
+  <a href="create.html" class="tab-item" id="tab-create">
+    <i class="fas fa-rocket"></i>
+    <span>创作</span>
+  </a>
+  <a href="fetch.html" class="tab-item" id="tab-fetch">
+    <i class="fas fa-robot"></i>
+    <span>机械臂</span>
+  </a>
+  <a href="my-planet.html" class="tab-item" id="tab-my-planet">
+    <i class="fas fa-globe"></i>
+    <span>我的星球</span>
+  </a>
+</div>
+
+<script>
+  // 根据当前页面设置激活状态
+  const currentPage = window.location.pathname.split('/').pop();
+  const tabItems = document.querySelectorAll('.tab-item');
+  
+  tabItems.forEach(item => {
+    const itemHref = item.getAttribute('href');
+    if (currentPage === itemHref) {
+      item.classList.add('active');
+    }
+  });
+  
+  // 接收主页面的暗色模式切换消息
+  window.addEventListener('message', function(event) {
+    if (event.data === 'toggle-theme') {
+      document.body.classList.toggle('dark-mode');
+    }
+  });
+</script> 

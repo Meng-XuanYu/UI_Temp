@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>设置 - 碎星集</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .settings-container {
+      padding: 16px;
+    }
+    
+    .settings-section {
+      margin-bottom: 24px;
+    }
+    
+    .settings-header {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--gray-800);
+    }
+    
+    .dark-mode .settings-header {
+      color: var(--gray-200);
+    }
+    
+    .settings-list {
+      background-color: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+    
+    .settings-list:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .dark-mode .settings-list {
+      background-color: var(--gray-800);
+    }
+    
+    .settings-item {
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .dark-mode .settings-item {
+      border-bottom: 1px solid var(--gray-700);
+    }
+    
+    .settings-item:last-child {
+      border-bottom: none;
+    }
+    
+    .settings-item-left {
+      display: flex;
+      align-items: center;
+    }
+    
+    .settings-item-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background-color: var(--gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      color: var(--primary-color);
+      transition: all 0.3s ease;
+    }
+    
+    .settings-item-icon:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .dark-mode .settings-item-icon {
+      background-color: var(--gray-700);
+    }
+    
+    .settings-item-content {
+      flex: 1;
+    }
+    
+    .settings-item-title {
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+    
+    .settings-item-description {
+      font-size: 12px;
+      color: var(--gray-500);
+    }
+    
+    .settings-item-right {
+      display: flex;
+      align-items: center;
+    }
+    
+    .settings-item-value {
+      margin-right: 8px;
+      font-size: 14px;
+      color: var(--gray-500);
+    }
+    
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 28px;
+    }
+    
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--gray-300);
+      transition: .4s;
+      border-radius: 34px;
+    }
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+      background-color: var(--primary-color);
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+    
+    .select-wrapper {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+    
+    .select-wrapper select {
+      appearance: none;
+      padding-right: 24px;
+      background-color: transparent;
+      border: none;
+      font-size: 14px;
+      color: var(--gray-700);
+    }
+    
+    .dark-mode .select-wrapper select {
+      color: var(--gray-300);
+    }
+    
+    .select-wrapper:after {
+      content: '\f107';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      right: 0;
+      color: var(--gray-500);
+      pointer-events: none;
+    }
+    
+    .app-version {
+      text-align: center;
+      padding: 24px 0;
+      font-size: 12px;
+      color: var(--gray-500);
+    }
+    
+    .button-red {
+      color: #ef4444;
+    }
+    
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      display: none;
+    }
+    
+    .modal-content {
+      background-color: white;
+      border-radius: 16px;
+      width: 300px;
+      padding: 24px;
+      text-align: center;
+    }
+    
+    .dark-mode .modal-content {
+      background-color: var(--gray-800);
+    }
+    
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    
+    .modal-description {
+      font-size: 14px;
+      color: var(--gray-600);
+      margin-bottom: 24px;
+    }
+    
+    .dark-mode .modal-description {
+      color: var(--gray-400);
+    }
+    
+    .modal-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+    <!-- 主要内容 -->
+    <div class="app-content">
+      <div class="settings-container">
+        <div class="flex items-center mb-6">
+          <a href="my-planet.html" class="text-primary-color">
+            <i class="fas fa-chevron-left mr-2"></i>返回
+          </a>
+          <h1 class="text-2xl font-bold mx-auto text-center w-full absolute left-0 right-0">设置</h1>
+        </div>
+        
+        <!-- 账号设置 -->
+        <div class="settings-section">
+          <h2 class="settings-header">账号</h2>
+          <div class="settings-list">
+            <div class="settings-item">
+              <div class="settings-item-left">
+                <div class="settings-item-icon">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="settings-item-content">
+                  <div class="settings-item-title">个人资料</div>
+                  <div class="settings-item-description">修改你的个人信息</div>
+                </div>
+              </div>
+              <div class="settings-item-right">
+                <i class="fas fa-chevron-right text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="settings-item">
+              <div class="settings-item-left">
+                <div class="settings-item-icon">
+                  <i class="fas fa-lock"></i>
+                </div>
+                <div class="settings-item-content">
+                  <div class="settings-item-title">修改密码</div>
+                  <div class="settings-item-description">更新你的账号密码</div>
+                </div>
+              </div>
+              <div class="settings-item-right">
+                <i class="fas fa-chevron-right text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="settings-item">
+              <div class="settings-item-left">
+                <div class="settings-item-icon">
+                  <i class="fas fa-bell"></i>
+                </div>
+                <div class="settings-item-content">
+                  <div class="settings-item-title">通知设置</div>
+                  <div class="settings-item-description">管理各类通知的接收方式</div>
+                </div>
+              </div>
+              <div class="settings-item-right">
+                <i class="fas fa-chevron-right text-gray-400"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 应用设置 -->
+        <div class="settings-section">
+          <h2 class="settings-header">应用设置</h2>
+          <div class="settings-list">
+            <div class="settings-item">
+              <div class="settings-item-left">
+                <div class="settings-item-icon">
+                  <i class="fas fa-moon"></i>
+                </div>
+                <div class="settings-item-content">
+                  <div class="settings-item-title">暗色模式</div>
+                  <div class="settings-item-description">切换应用的显示主题</div>
+                </div>
+              </div>
+              <div class="settings-item-right">
+                <label class="switch">
+                  <input type="checkbox" id="theme-toggle">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            
+            <div class="settings-item">
+              <div class="settings-item-left">
+                <div class="settings-item-icon">
+                  <i class="fas fa-font"></i>
+                </div>
+                <div class="settings-item-content">
+                  <div class="settings-item-title">字体设置</div>
+                  <div class="settings-item-description">调整字体大小和样式</div>
+                </div>
+              </div>
+              <div class="settings-item-right">
+                <div class="select-wrapper">
+                  <select>
+                    <option>默认</option>
+                    <option>小</option>
+                    <option>中</option>
+                    <option>大</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div class="settings-item">
+              <div class="settings-item-left">
+                <div class="settings-item-icon">
+                  <i class="fas fa-home"></i>
+                </div>
+                <div class="settings-item-content">
+                  <div class="settings-item-title">默认启动页</div>
+                  <div class="settings-item-description">设置应用启动时的首页</div>
+                </div>
+              </div>
+              <div class="settings-item-right">
+                <div class="select-wrapper">
+                  <select>
+                    <option>星环</option>
+                    <option>观察室</option>
+                    <option>我的星球</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div class="settings-item">
+              <div class="settings-item-left">
+                <div class="settings-item-icon">
+                  <i class="fas fa-bell"></i>
+                </div>
+                <div class="settings-item-content">
+                  <div class="settings-item-title">显示Badges</div>
+                  <div class="settings-item-description">在应用图标上显示未读通知数量</div>
+                </div>
+              </div>
+              <div class="settings-item-right">
+                <label class="switch">
+                  <input type="checkbox" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 其他设置 -->
+        <div class="settings-section">
+          <h2 class="settings-header">其他</h2>
+          <div class="settings-list">
+            <div class="settings-item">
+              <div class="settings-item-left">
+                <div class="settings-item-icon">
+                  <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="settings-item-content">
+                  <div class="settings-item-title">关于碎星集</div>
+                  <div class="settings-item-description">了解应用的基本信息</div>
+                </div>
+              </div>
+              <div class="settings-item-right">
+                <i class="fas fa-chevron-right text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="settings-item">
+              <div class="settings-item-left">
+                <div class="settings-item-icon">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="settings-item-content">
+                  <div class="settings-item-title">隐私政策</div>
+                </div>
+              </div>
+              <div class="settings-item-right">
+                <i class="fas fa-chevron-right text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="settings-item">
+              <div class="settings-item-left">
+                <div class="settings-item-icon">
+                  <i class="fas fa-file-contract"></i>
+                </div>
+                <div class="settings-item-content">
+                  <div class="settings-item-title">用户协议</div>
+                </div>
+              </div>
+              <div class="settings-item-right">
+                <i class="fas fa-chevron-right text-gray-400"></i>
+              </div>
+            </div>
+            
+            <div class="settings-item">
+              <div class="settings-item-left">
+                <div class="settings-item-icon">
+                  <i class="fas fa-sign-out-alt"></i>
+                </div>
+                <div class="settings-item-content">
+                  <div class="settings-item-title">退出登录</div>
+                </div>
+              </div>
+              <div class="settings-item-right">
+                <button id="logout-button" class="text-red-500">
+                  <i class="fas fa-chevron-right text-gray-400"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="app-version">
+          碎星集 v1.0.0
+        </div>
+      </div>
+    </div>
+    
+    <!-- 退出登录确认弹窗 -->
+    <div class="modal-overlay" id="logout-modal">
+      <div class="modal-content">
+        <div class="modal-title">确认退出登录</div>
+        <div class="modal-description">
+          你确定要退出当前账号吗？
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-outline" id="cancel-logout">取消</button>
+          <a href="login.html" class="btn btn-primary">退出登录</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 暗色模式切换
+    const themeToggle = document.getElementById('theme-toggle');
+    
+    // 初始化检查当前暗色模式状态
+    if (document.body.classList.contains('dark-mode')) {
+      themeToggle.checked = true;
+    }
+    
+    themeToggle.addEventListener('change', function() {
+      document.body.classList.toggle('dark-mode');
+      
+      // 向父页面发送消息
+      window.parent.postMessage('toggle-theme', '*');
+    });
+    
+    // 退出登录弹窗
+    const logoutButton = document.getElementById('logout-button');
+    const logoutModal = document.getElementById('logout-modal');
+    const cancelLogout = document.getElementById('cancel-logout');
+    
+    logoutButton.addEventListener('click', function() {
+      logoutModal.style.display = 'flex';
+    });
+    
+    cancelLogout.addEventListener('click', function() {
+      logoutModal.style.display = 'none';
+    });
+    
+    // 点击弹窗外部关闭弹窗
+    logoutModal.addEventListener('click', function(event) {
+      if (event.target === logoutModal) {
+        logoutModal.style.display = 'none';
+      }
+    });
+    
+    // 接收主页面的暗色模式切换消息
+    window.addEventListener('message', function(event) {
+      if (event.data === 'toggle-theme') {
+        document.body.classList.toggle('dark-mode');
+        themeToggle.checked = document.body.classList.contains('dark-mode');
+      }
+    });
+  </script>
+</body>
+</html> 

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>字体设置 - 碎星集</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .font-container {
+      padding: 16px;
+    }
+    
+    .font-card {
+      background-color: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      margin-bottom: 24px;
+    }
+    
+    .dark-mode .font-card {
+      background-color: var(--gray-800);
+    }
+    
+    .font-section {
+      padding: 16px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .dark-mode .font-section {
+      border-bottom: 1px solid var(--gray-700);
+    }
+    
+    .font-section:last-child {
+      border-bottom: none;
+    }
+    
+    .font-section-title {
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    
+    .slider-container {
+      margin-bottom: 16px;
+    }
+    
+    .font-slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--gray-300);
+      outline: none;
+      margin: 10px 0;
+    }
+    
+    .dark-mode .font-slider {
+      background: var(--gray-700);
+    }
+    
+    .font-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      cursor: pointer;
+    }
+    
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--gray-500);
+    }
+    
+    .font-option {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .dark-mode .font-option {
+      border-bottom: 1px solid var(--gray-700);
+    }
+    
+    .font-option:last-child {
+      border-bottom: none;
+    }
+    
+    .font-radio {
+      margin-right: 12px;
+    }
+    
+    .font-name {
+      flex: 1;
+    }
+    
+    .font-sample {
+      font-size: 16px;
+      margin-top: 16px;
+      padding: 16px;
+      background-color: var(--gray-100);
+      border-radius: 12px;
+      line-height: 1.6;
+    }
+    
+    .dark-mode .font-sample {
+      background-color: var(--gray-700);
+    }
+    
+    .font-sample.preview-small {
+      font-size: 14px;
+    }
+    
+    .font-sample.preview-large {
+      font-size: 18px;
+    }
+    
+    .font-sample.font-serif {
+      font-family: serif;
+    }
+    
+    .font-sample.font-sans {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    
+    .font-sample.font-mono {
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+    <!-- 主要内容 -->
+    <div class="app-content">
+      <div class="font-container">
+        <div class="flex items-center mb-6">
+          <a href="settings.html" class="text-primary-color">
+            <i class="fas fa-chevron-left mr-2"></i>返回
+          </a>
+          <h1 class="text-2xl font-bold mx-auto text-center w-full absolute left-0 right-0">字体设置</h1>
+        </div>
+        
+        <div class="font-card">
+          <!-- 字体大小 -->
+          <div class="font-section">
+            <h2 class="font-section-title">字体大小</h2>
+            <div class="slider-container">
+              <input type="range" min="1" max="3" value="2" class="font-slider" id="font-size-slider">
+              <div class="slider-labels">
+                <span>小</span>
+                <span>标准</span>
+                <span>大</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 字体样式 -->
+          <div class="font-section">
+            <h2 class="font-section-title">字体样式</h2>
+            
+            <div class="font-option">
+              <input type="radio" name="font-style" id="font-sans" class="font-radio" checked>
+              <label for="font-sans" class="font-name">无衬线字体 (Sans-serif)</label>
+            </div>
+            
+            <div class="font-option">
+              <input type="radio" name="font-style" id="font-serif" class="font-radio">
+              <label for="font-serif" class="font-name">衬线字体 (Serif)</label>
+            </div>
+            
+            <div class="font-option">
+              <input type="radio" name="font-style" id="font-mono" class="font-radio">
+              <label for="font-mono" class="font-name">等宽字体 (Monospace)</label>
+            </div>
+          </div>
+          
+          <!-- 行间距 -->
+          <div class="font-section">
+            <h2 class="font-section-title">行间距</h2>
+            <div class="slider-container">
+              <input type="range" min="1" max="3" value="2" class="font-slider" id="line-height-slider">
+              <div class="slider-labels">
+                <span>紧凑</span>
+                <span>标准</span>
+                <span>宽松</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 预览 -->
+        <div class="mb-4">
+          <h2 class="font-section-title">预览</h2>
+        </div>
+        <div class="font-sample" id="font-preview">
+          每一个星球都有自己独特的故事。我们通过碎星集，将这些故事连接起来，编织成浩瀚宇宙的一部分。无论是什么类型的内容，它们都是星辰大海中闪烁的光点。
+        </div>
+        
+        <button class="btn btn-primary w-full mt-6">应用设置</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 字体大小滑块
+    const fontSizeSlider = document.getElementById('font-size-slider');
+    const fontPreview = document.getElementById('font-preview');
+    
+    fontSizeSlider.addEventListener('input', function() {
+      const value = this.value;
+      
+      // 移除所有字体大小类
+      fontPreview.classList.remove('preview-small', 'preview-large');
+      
+      // 添加相应的类
+      if (value == 1) {
+        fontPreview.classList.add('preview-small');
+      } else if (value == 3) {
+        fontPreview.classList.add('preview-large');
+      }
+    });
+    
+    // 字体样式选择
+    const fontStyleRadios = document.querySelectorAll('input[name="font-style"]');
+    
+    fontStyleRadios.forEach(radio => {
+      radio.addEventListener('change', function() {
+        // 移除所有字体样式类
+        fontPreview.classList.remove('font-sans', 'font-serif', 'font-mono');
+        
+        // 添加选中的字体样式类
+        if (this.id === 'font-sans') {
+          fontPreview.classList.add('font-sans');
+        } else if (this.id === 'font-serif') {
+          fontPreview.classList.add('font-serif');
+        } else if (this.id === 'font-mono') {
+          fontPreview.classList.add('font-mono');
+        }
+      });
+    });
+    
+    // 行间距滑块
+    const lineHeightSlider = document.getElementById('line-height-slider');
+    
+    lineHeightSlider.addEventListener('input', function() {
+      const value = this.value;
+      let lineHeight = 1.6; // 默认值
+      
+      if (value == 1) {
+        lineHeight = 1.3;
+      } else if (value == 3) {
+        lineHeight = 1.9;
+      }
+      
+      fontPreview.style.lineHeight = lineHeight;
+    });
+    
+    // 初始化字体样式
+    fontPreview.classList.add('font-sans');
+    
+    // 接收主页面的暗色模式切换消息
+    window.addEventListener('message', function(event) {
+      if (event.data === 'toggle-theme') {
+        document.body.classList.toggle('dark-mode');
+      }
+    });
+  </script>
+</body>
+</html> 

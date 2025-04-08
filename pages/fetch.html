@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>机械臂 - 碎星集</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .fetch-container {
+      padding: 16px;
+    }
+    
+    .search-box {
+      display: flex;
+      align-items: center;
+      background-color: var(--gray-100);
+      border-radius: 12px;
+      padding: 8px 16px;
+      margin-bottom: 16px;
+    }
+    
+    .dark-mode .search-box {
+      background-color: var(--gray-700);
+    }
+    
+    .search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background-color: transparent;
+      font-size: 16px;
+      margin-left: 8px;
+    }
+    
+    .dark-mode .search-input {
+      color: var(--gray-100);
+    }
+    
+    .source-tabs {
+      display: flex;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .dark-mode .source-tabs {
+      border-bottom: 1px solid var(--gray-700);
+    }
+    
+    .source-tab {
+      padding: 8px 16px;
+      margin-right: 8px;
+      white-space: nowrap;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 16px;
+      transition: all 0.2s;
+    }
+    
+    .source-tab.active {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .robot-arm {
+      position: relative;
+      height: 200px;
+      background: url('https://images.unsplash.com/photo-1581092921461-6484336eabe6?w=800&h=400&fit=crop&auto=format&q=80') center/cover no-repeat;
+      border-radius: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    
+    .robot-arm::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+    
+    .robot-arm-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      color: white;
+      padding: 0 24px;
+    }
+    
+    .robot-arm-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    
+    .robot-arm-description {
+      font-size: 16px;
+      margin-bottom: 16px;
+      opacity: 0.9;
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .recommendation-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    
+    .recommendation-card {
+      background-color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .dark-mode .recommendation-card {
+      background-color: var(--gray-800);
+    }
+    
+    .recommendation-image {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+    }
+    
+    .recommendation-content {
+      padding: 12px;
+    }
+    
+    .recommendation-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    
+    .recommendation-source {
+      font-size: 12px;
+      color: var(--gray-500);
+    }
+    
+    .grab-button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 12px;
+      margin-top: 8px;
+      display: inline-flex;
+      align-items: center;
+    }
+    
+    .grab-button i {
+      margin-right: 4px;
+    }
+    
+    .friend-list {
+      margin-bottom: 24px;
+    }
+    
+    .friend-item {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      border-radius: 12px;
+      background-color: white;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .dark-mode .friend-item {
+      background-color: var(--gray-800);
+    }
+    
+    .friend-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 24px;
+      overflow: hidden;
+      margin-right: 12px;
+    }
+    
+    .friend-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .friend-info {
+      flex: 1;
+    }
+    
+    .friend-name {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    
+    .friend-status {
+      font-size: 12px;
+      color: var(--gray-500);
+    }
+    
+    .friend-action {
+      display: flex;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+    <!-- 状态栏 -->
+    <iframe src="../components/status-bar.html" frameborder="0" width="100%" height="44px" scrolling="no"></iframe>
+
+    <!-- 主要内容 -->
+    <div class="app-content">
+      <div class="fetch-container">
+        <div class="page-header">
+          <h1 class="page-title">机械臂</h1>
+        </div>
+        
+        <div class="search-box">
+          <i class="fas fa-search text-gray-400"></i>
+          <input type="text" class="search-input" placeholder="搜索内容或账号">
+        </div>
+        
+        <div class="source-tabs">
+          <div class="source-tab active">推荐</div>
+          <div class="source-tab">好友</div>
+          <div class="source-tab">科学</div>
+          <div class="source-tab">艺术</div>
+          <div class="source-tab">思考</div>
+          <div class="source-tab">宇宙</div>
+        </div>
+        
+        <div class="robot-arm">
+          <div class="robot-arm-content">
+            <div class="robot-arm-title">探索奇妙宇宙</div>
+            <div class="robot-arm-description">机械臂可以帮你抓取有趣的内容</div>
+            <button class="btn btn-primary">开始探索</button>
+          </div>
+        </div>
+        
+        <div class="section-title">
+          <span>推荐内容</span>
+          <a href="#" class="text-primary-color text-sm">刷新</a>
+        </div>
+        
+        <div class="recommendation-grid">
+          <div class="recommendation-card">
+            <img src="https://images.unsplash.com/photo-1501862700950-18382cd41497?w=300&h=200&fit=crop&auto=format&q=80" alt="推荐内容" class="recommendation-image">
+            <div class="recommendation-content">
+              <div class="recommendation-title">星际旅行的可能性探讨</div>
+              <div class="recommendation-source">来源：星际杂志</div>
+              <button class="grab-button">
+                <i class="fas fa-robot"></i> 抓取
+              </button>
+            </div>
+          </div>
+          
+          <div class="recommendation-card">
+            <img src="https://images.unsplash.com/photo-1541367777708-7905fe3296c0?w=300&h=200&fit=crop&auto=format&q=80" alt="推荐内容" class="recommendation-image">
+            <div class="recommendation-content">
+              <div class="recommendation-title">人工智能的伦理边界</div>
+              <div class="recommendation-source">来源：科技前沿</div>
+              <button class="grab-button">
+                <i class="fas fa-robot"></i> 抓取
+              </button>
+            </div>
+          </div>
+          
+          <div class="recommendation-card">
+            <img src="https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=300&h=200&fit=crop&auto=format&q=80" alt="推荐内容" class="recommendation-image">
+            <div class="recommendation-content">
+              <div class="recommendation-title">生物多样性的重要性</div>
+              <div class="recommendation-source">来源：自然之声</div>
+              <button class="grab-button">
+                <i class="fas fa-robot"></i> 抓取
+              </button>
+            </div>
+          </div>
+          
+          <div class="recommendation-card">
+            <img src="https://images.unsplash.com/photo-1549558549-415fe4c37b60?w=300&h=200&fit=crop&auto=format&q=80" alt="推荐内容" class="recommendation-image">
+            <div class="recommendation-content">
+              <div class="recommendation-title">古典音乐对大脑的影响</div>
+              <div class="recommendation-source">来源：艺术评论</div>
+              <button class="grab-button">
+                <i class="fas fa-robot"></i> 抓取
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="section-title">
+          <span>好友动态</span>
+          <a href="#" class="text-primary-color text-sm">查看全部</a>
+        </div>
+        
+        <div class="friend-list">
+          <div class="friend-item">
+            <div class="friend-avatar">
+              <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&auto=format&q=80" alt="好友头像">
+            </div>
+            <div class="friend-info">
+              <div class="friend-name">星语</div>
+              <div class="friend-status">刚刚发布了一条新内容</div>
+            </div>
+            <div class="friend-action">
+              <button class="grab-button">
+                <i class="fas fa-robot"></i> 抓取
+              </button>
+            </div>
+          </div>
+          
+          <div class="friend-item">
+            <div class="friend-avatar">
+              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&auto=format&q=80" alt="好友头像">
+            </div>
+            <div class="friend-info">
+              <div class="friend-name">光子</div>
+              <div class="friend-status">2小时前更新了内容</div>
+            </div>
+            <div class="friend-action">
+              <button class="grab-button">
+                <i class="fas fa-robot"></i> 抓取
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // 标签切换效果
+    document.querySelectorAll('.source-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.source-tab').forEach(t => {
+          t.classList.remove('active');
+        });
+        tab.classList.add('active');
+      });
+    });
+    
+    // 接收主页面的暗色模式切换消息
+    window.addEventListener('message', function(event) {
+      if (event.data === 'toggle-theme') {
+        document.body.classList.toggle('dark-mode');
+      }
+    });
+  </script>
+</body>
+</html> 

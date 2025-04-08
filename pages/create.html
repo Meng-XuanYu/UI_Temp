@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>创作 - 碎星集</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .create-container {
+      padding: 16px;
+    }
+    
+    .editor-container {
+      margin-bottom: 16px;
+    }
+    
+    .editor-title {
+      border: none;
+      outline: none;
+      width: 100%;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--gray-200);
+      background-color: transparent;
+    }
+    
+    .dark-mode .editor-title {
+      border-bottom: 1px solid var(--gray-600);
+      color: var(--gray-100);
+    }
+    
+    .editor-content {
+      border: none;
+      outline: none;
+      width: 100%;
+      height: 300px;
+      font-size: 16px;
+      line-height: 1.6;
+      resize: none;
+      padding: 8px 0;
+      background-color: transparent;
+    }
+    
+    .dark-mode .editor-content {
+      color: var(--gray-100);
+    }
+    
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-top: 1px solid var(--gray-200);
+    }
+    
+    .dark-mode .toolbar {
+      border-top: 1px solid var(--gray-600);
+    }
+    
+    .tool-button {
+      width: 36px;
+      height: 36px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-600);
+      transition: all 0.2s;
+    }
+    
+    .dark-mode .tool-button {
+      color: var(--gray-400);
+    }
+    
+    .tool-button:hover {
+      background-color: var(--gray-100);
+      color: var(--gray-800);
+    }
+    
+    .dark-mode .tool-button:hover {
+      background-color: var(--gray-700);
+      color: var(--gray-200);
+    }
+    
+    .footer-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 16px;
+    }
+    
+    .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      background-color: var(--gray-100);
+      color: var(--gray-700);
+      border-radius: 16px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .dark-mode .tag {
+      background-color: var(--gray-700);
+      color: var(--gray-300);
+    }
+    
+    .tag i {
+      margin-left: 4px;
+      cursor: pointer;
+    }
+    
+    .preview-section {
+      background-color: var(--gray-100);
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 24px;
+    }
+    
+    .dark-mode .preview-section {
+      background-color: var(--gray-800);
+    }
+    
+    .preview-header {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .preview-header i {
+      margin-right: 8px;
+    }
+    
+    .preview-images {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    
+    .preview-image {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+      position: relative;
+    }
+    
+    .preview-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .preview-image .remove {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      cursor: pointer;
+    }
+    
+    .add-image {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      border: 1px dashed var(--gray-300);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-500);
+      cursor: pointer;
+    }
+    
+    .dark-mode .add-image {
+      border: 1px dashed var(--gray-600);
+    }
+    
+    .add-image i {
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+    
+    .add-image span {
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+    <!-- 状态栏 -->
+    <iframe src="../components/status-bar.html" frameborder="0" width="100%" height="44px" scrolling="no"></iframe>
+
+    <!-- 主要内容 -->
+    <div class="app-content">
+      <div class="create-container">
+        <div class="flex items-center justify-between mb-6">
+          <button class="btn btn-outline text-sm px-3 py-1">
+            <i class="fas fa-times mr-1"></i> 取消
+          </button>
+          <button class="btn btn-primary text-sm px-4 py-1">
+            <i class="fas fa-paper-plane mr-1"></i> 发布
+          </button>
+        </div>
+        
+        <div class="editor-container">
+          <input type="text" class="editor-title" placeholder="标题（选填）">
+          <textarea class="editor-content" placeholder="写下你的想法..."></textarea>
+        </div>
+        
+        <div class="tag-container">
+          <div class="tag">科学 <i class="fas fa-times-circle"></i></div>
+          <div class="tag">艺术 <i class="fas fa-times-circle"></i></div>
+          <div class="tag">思考 <i class="fas fa-times-circle"></i></div>
+          <div class="tag">+ 添加标签</div>
+        </div>
+        
+        <div class="toolbar">
+          <div class="flex space-x-2">
+            <button class="tool-button">
+              <i class="fas fa-bold"></i>
+            </button>
+            <button class="tool-button">
+              <i class="fas fa-italic"></i>
+            </button>
+            <button class="tool-button">
+              <i class="fas fa-underline"></i>
+            </button>
+            <button class="tool-button">
+              <i class="fas fa-list"></i>
+            </button>
+          </div>
+          <div class="flex space-x-2">
+            <button class="tool-button">
+              <i class="fas fa-link"></i>
+            </button>
+            <button class="tool-button">
+              <i class="fas fa-image"></i>
+            </button>
+            <button class="tool-button">
+              <i class="fas fa-at"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="preview-section">
+          <div class="preview-header">
+            <i class="fas fa-image"></i> 添加图片
+          </div>
+          <div class="preview-images">
+            <div class="preview-image">
+              <img src="https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?w=200&h=200&fit=crop&auto=format&q=80" alt="预览图">
+              <div class="remove">
+                <i class="fas fa-times"></i>
+              </div>
+            </div>
+            <div class="preview-image">
+              <img src="https://images.unsplash.com/photo-1544866092-1677b00c0c7f?w=200&h=200&fit=crop&auto=format&q=80" alt="预览图">
+              <div class="remove">
+                <i class="fas fa-times"></i>
+              </div>
+            </div>
+            <div class="add-image">
+              <i class="fas fa-plus"></i>
+              <span>添加</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="footer-actions">
+          <div>
+            <button class="btn btn-outline text-sm px-3 py-1">
+              <i class="fas fa-save mr-1"></i> 存草稿
+            </button>
+          </div>
+          <div>
+            <button class="btn btn-outline text-sm px-3 py-1">
+              <i class="fas fa-eye mr-1"></i> 预览
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // 接收主页面的暗色模式切换消息
+    window.addEventListener('message', function(event) {
+      if (event.data === 'toggle-theme') {
+        document.body.classList.toggle('dark-mode');
+      }
+    });
+  </script>
+</body>
+</html> 

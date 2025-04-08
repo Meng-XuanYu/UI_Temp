@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>观察室 - 碎星集</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .galaxy-view {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      background-color: black;
+      background-image: url('https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=800&h=600&fit=crop&auto=format&q=80');
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
+      border-radius: 0 0 24px 24px;
+    }
+    
+    .star-system {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .star {
+      position: absolute;
+      border-radius: 50%;
+      background-color: white;
+      box-shadow: 0 0 10px white, 0 0 20px white;
+      animation: twinkle 2s infinite alternate;
+    }
+    
+    @keyframes twinkle {
+      0% {
+        opacity: 0.3;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    
+    .constellation {
+      position: absolute;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .constellation:hover {
+      transform: scale(1.1);
+    }
+    
+    .constellation-1 {
+      top: 50px;
+      left: 80px;
+      width: 80px;
+      height: 80px;
+    }
+    
+    .constellation-2 {
+      top: 150px;
+      right: 60px;
+      width: 100px;
+      height: 100px;
+    }
+    
+    .constellation-3 {
+      bottom: 80px;
+      left: 120px;
+      width: 90px;
+      height: 90px;
+    }
+    
+    .constellation img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+    }
+    
+    .explore-button {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(5px);
+      color: white;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      transition: all 0.3s;
+    }
+    
+    .explore-button:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .daily-push {
+      padding: 16px;
+    }
+    
+    .daily-push-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .daily-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .push-card {
+      background-color: white;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .dark-mode .push-card {
+      background-color: var(--gray-800);
+    }
+    
+    .push-image {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+    }
+    
+    .push-content {
+      padding: 16px;
+    }
+    
+    .push-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    
+    .push-description {
+      font-size: 14px;
+      color: var(--gray-600);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    
+    .dark-mode .push-description {
+      color: var(--gray-400);
+    }
+    
+    .push-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--gray-500);
+    }
+    
+    .push-actions {
+      display: flex;
+      gap: 16px;
+    }
+    
+    .push-action {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+    <!-- 状态栏 -->
+    <iframe src="../components/status-bar.html" frameborder="0" width="100%" height="44px" scrolling="no"></iframe>
+
+    <!-- 主要内容 -->
+    <div class="app-content">
+      <!-- 银河视图 -->
+      <div class="galaxy-view">
+        <!-- 随机生成的星星 -->
+        <script>
+          for (let i = 0; i < 30; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = Math.random() * 3 + 1 + 'px';
+            star.style.height = star.style.width;
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 2 + 's';
+            document.currentScript.parentNode.appendChild(star);
+          }
+        </script>
+        
+        <div class="constellation constellation-1">
+          <img src="https://www.svgrepo.com/show/396903/constellation.svg" alt="星座">
+        </div>
+        <div class="constellation constellation-2">
+          <img src="https://www.svgrepo.com/show/396909/sparkles.svg" alt="星座">
+        </div>
+        <div class="constellation constellation-3">
+          <img src="https://www.svgrepo.com/show/396904/milky-way.svg" alt="星座">
+        </div>
+        
+        <button class="explore-button">
+          <i class="fas fa-compass mr-2"></i>进入星系探索
+        </button>
+      </div>
+      
+      <!-- 今日推送 -->
+      <div class="daily-push">
+        <div class="daily-push-header">
+          <div class="daily-title">今日推送</div>
+          <a href="#" class="text-primary-color text-sm">查看全部</a>
+        </div>
+        
+        <div class="push-card">
+          <img src="https://images.unsplash.com/photo-1539593395743-7da440187630?w=600&h=300&fit=crop&auto=format&q=80" alt="推送内容" class="push-image">
+          <div class="push-content">
+            <div class="push-title">自然界的奇妙规律：探索黄金比例的秘密</div>
+            <div class="push-description">黄金比例不仅出现在人类的艺术作品中，也广泛存在于自然界中，从植物的生长模式到动物的身体比例，这种神奇的数学关系无处不在。</div>
+            <div class="push-footer">
+              <div>恒星级推送 | 2小时前</div>
+              <div class="push-actions">
+                <div class="push-action">
+                  <i class="far fa-heart"></i>
+                  <span>收藏</span>
+                </div>
+                <div class="push-action">
+                  <i class="far fa-share-square"></i>
+                  <span>分享</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="push-card">
+          <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&h=300&fit=crop&auto=format&q=80" alt="推送内容" class="push-image">
+          <div class="push-content">
+            <div class="push-title">深度学习如何改变我们的未来生活</div>
+            <div class="push-description">从智能家居到无人驾驶汽车，深度学习技术正在加速改变我们的日常生活，它将如何影响未来的社会发展？</div>
+            <div class="push-footer">
+              <div>行星级推送 | 5小时前</div>
+              <div class="push-actions">
+                <div class="push-action">
+                  <i class="far fa-heart"></i>
+                  <span>收藏</span>
+                </div>
+                <div class="push-action">
+                  <i class="far fa-share-square"></i>
+                  <span>分享</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // 星座点击效果
+    document.querySelectorAll('.constellation').forEach(const1 => {
+      const1.addEventListener('click', () => {
+        // 模拟点击效果
+        const1.style.transform = 'scale(1.2)';
+        setTimeout(() => {
+          const1.style.transform = 'scale(1)';
+        }, 200);
+      });
+    });
+    
+    // 收藏按钮点击效果
+    document.querySelectorAll('.push-action').forEach(action => {
+      action.addEventListener('click', () => {
+        const icon = action.querySelector('i');
+        if (icon.classList.contains('far')) {
+          icon.classList.remove('far');
+          icon.classList.add('fas');
+          icon.style.color = '#3b82f6';
+        } else {
+          icon.classList.remove('fas');
+          icon.classList.add('far');
+          icon.style.color = '';
+        }
+      });
+    });
+    
+    // 接收主页面的暗色模式切换消息
+    window.addEventListener('message', function(event) {
+      if (event.data === 'toggle-theme') {
+        document.body.classList.toggle('dark-mode');
+      }
+    });
+  </script>
+</body>
+</html> 
