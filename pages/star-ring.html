@@ -8,163 +8,528 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../css/styles.css">
   <style>
-    .star-ring {
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+    }
+    
+    #app-container {
       position: relative;
       width: 100%;
       height: 100%;
-      overflow: hidden;
     }
     
-    .ring-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      padding: 16px;
+    .status-bar-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      height: 44px;
     }
     
-    .ring-orbit {
-      position: relative;
-      width: 300px;
-      height: 300px;
-      border-radius: 50%;
-      border: 1px dashed var(--gray-300);
-      margin: 16px auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transform: rotateX(70deg);
-      transform-style: preserve-3d;
-    }
-    
-    .dark-mode .ring-orbit {
-      border: 1px dashed var(--gray-600);
-    }
-    
-    .ring-center {
-      width: 80px;
-      height: 80px;
-      background-color: var(--primary-color);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 30px;
-      z-index: 10;
-      box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-      transform: rotateX(-70deg);
-    }
-    
-    .star-fragment {
+    #scene-container {
       position: absolute;
-      width: 50px;
-      height: 50px;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .ui-overlay {
+      position: fixed;
+      top: 44px;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      pointer-events: none;
+    }
+    
+    .ui-overlay > * {
+      pointer-events: auto;
+    }
+    
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background-color: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: white;
+    }
+    
+    .page-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    
+    .btn-outline {
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      border-radius: 8px;
+    }
+    
+    .controls-overlay {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      z-index: 100;
+    }
+    
+    .control-btn {
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      background-color: var(--secondary-color);
+      background-color: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
-      font-weight: bold;
-      font-size: 20px;
-      box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
-      transform: rotateX(-70deg);
-      transition: all 0.3s;
       cursor: pointer;
+      font-size: 1rem;
     }
     
-    .star-fragment:hover {
-      transform: rotateX(-70deg) scale(1.1);
+    .tooltip {
+      position: fixed;
+      padding: 8px 12px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      border-radius: 4px;
+      font-size: 14px;
+      pointer-events: none;
+      display: none;
+      max-width: 200px;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
     }
     
-    .star-fragment:nth-child(1) {
-      left: calc(50% + 110px);
-      top: calc(50% - 25px);
+    /* 视图切换器样式 */
+    .view-switcher {
+      display: flex;
+      justify-content: center;
+      margin: 8px 0;
+      pointer-events: auto;
     }
     
-    .star-fragment:nth-child(2) {
-      left: calc(50% - 160px);
-      top: calc(50% - 25px);
+    .view-switcher-inner {
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 999px;
+      padding: 4px;
+      display: flex;
+      gap: 4px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
-    .star-fragment:nth-child(3) {
-      left: calc(50% - 25px);
-      top: calc(50% - 160px);
-    }
-    
-    .star-fragment:nth-child(4) {
-      left: calc(50% - 25px);
-      top: calc(50% + 110px);
-    }
-    
-    .star-fragment:nth-child(5) {
-      left: calc(50% + 60px);
-      top: calc(50% + 60px);
-    }
-    
-    .star-fragment:nth-child(6) {
-      left: calc(50% - 110px);
-      top: calc(50% + 60px);
-    }
-    
-    .collection-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      padding: 16px;
-    }
-    
-    .collection-card {
-      background-color: white;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    .view-btn {
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
       transition: all 0.2s;
     }
     
-    .dark-mode .collection-card {
-      background-color: var(--gray-800);
+    .view-btn.active {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
     }
     
-    .collection-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-    }
-    
-    .collection-image {
+    /* 内容视图样式 */
+    #content-view {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      height: 100px;
+      height: 100%;
+      padding-top: 120px;
+      padding-bottom: 20px;
+      overflow-y: auto;
+      background-color: #000915;
+      display: none;
+    }
+    
+    .content-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+    
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    
+    .content-card {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.3s;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .content-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .content-image {
+      width: 100%;
+      height: 140px;
       object-fit: cover;
     }
     
-    .collection-content {
-      padding: 12px;
+    .content-body {
+      padding: 16px;
+      color: white;
     }
     
-    .collection-title {
+    .content-title {
       font-weight: 600;
-      font-size: 14px;
-      margin-bottom: 4px;
+      font-size: 16px;
+      margin-bottom: 8px;
       line-height: 1.3;
     }
     
-    .collection-info {
+    .content-meta {
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-size: 12px;
-      color: var(--gray-500);
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .content-category {
+      margin-top: 24px;
+      margin-bottom: 12px;
+      color: white;
+      font-weight: 600;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .content-category i {
+      margin-right: 8px;
+      opacity: 0.8;
+    }
+    
+    /* 详情弹窗样式 */
+    .detail-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .detail-modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .modal-backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    
+    .modal-content {
+      position: relative;
+      width: 90%;
+      max-width: 600px;
+      background-color: rgba(13, 18, 30, 0.95);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      transform: translateY(30px);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    
+    .detail-modal.active .modal-content {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    .modal-header {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+    }
+    
+    .modal-header img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .modal-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      background: linear-gradient(to top, rgba(13, 18, 30, 1), transparent);
+    }
+    
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 36px;
+      height: 36px;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      z-index: 10;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    
+    .modal-body {
+      padding: 24px;
+      color: white;
+    }
+    
+    .modal-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: white;
+      line-height: 1.3;
+    }
+    
+    .modal-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 20px;
+    }
+    
+    .modal-content-text {
+      font-size: 16px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 24px;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .modal-button {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .modal-button.primary {
+      background-color: rgba(59, 130, 246, 0.2);
+      color: #3b82f6;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    
+    .modal-button.primary:hover {
+      background-color: rgba(59, 130, 246, 0.3);
+    }
+    
+    .modal-button.secondary {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .modal-button.secondary:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* 星球发光效果 */
+    .planet-glow {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.4) 0%, rgba(59, 130, 246, 0) 70%);
+      pointer-events: none;
+      z-index: 5;
     }
   </style>
 </head>
 <body>
   <div id="app-container">
     <!-- 状态栏 -->
-    <iframe src="../components/status-bar.html" frameborder="0" width="100%" height="44px" scrolling="no"></iframe>
-
-    <!-- 主要内容 -->
-    <div class="app-content">
+    <div class="status-bar-container">
+      <iframe src="../components/status-bar.html" frameborder="0" width="100%" height="44px" scrolling="no"></iframe>
+    </div>
+    
+    <!-- Three.js 场景容器 -->
+    <div id="scene-container"></div>
+    
+    <!-- 内容视图 -->
+    <div id="content-view">
+      <div class="content-container">
+        <div class="content-grid">
+          <div class="content-card">
+            <img src="https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=500&h=300&fit=crop&auto=format&q=80" alt="人类的未来" class="content-image">
+            <div class="content-body">
+              <div class="content-title">人类的未来在哪里？</div>
+              <div class="content-meta">
+                <span>系统推送</span>
+                <span>3小时前</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="content-card">
+            <img src="https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=500&h=300&fit=crop&auto=format&q=80" alt="太阳系" class="content-image">
+            <div class="content-body">
+              <div class="content-title">太阳系的奇妙现象</div>
+              <div class="content-meta">
+                <span>来自：朋友</span>
+                <span>刚刚</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="content-card">
+            <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=500&h=300&fit=crop&auto=format&q=80" alt="黑洞" class="content-image">
+            <div class="content-body">
+              <div class="content-title">黑洞的形成过程</div>
+              <div class="content-meta">
+                <span>来自：星辰阁</span>
+                <span>昨天</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="content-card">
+            <img src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=500&h=300&fit=crop&auto=format&q=80" alt="宇宙边缘" class="content-image">
+            <div class="content-body">
+              <div class="content-title">宇宙的边缘有什么？</div>
+              <div class="content-meta">
+                <span>系统推送</span>
+                <span>2天前</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="content-card">
+            <img src="https://images.unsplash.com/photo-1502651664694-5972cec1fef3?w=500&h=300&fit=crop&auto=format&q=80" alt="星际旅行" class="content-image">
+            <div class="content-body">
+              <div class="content-title">星际旅行的可能性</div>
+              <div class="content-meta">
+                <span>系统推送</span>
+                <span>5天前</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="content-card">
+            <img src="https://images.unsplash.com/photo-1465101162946-4377e57745c3?w=500&h=300&fit=crop&auto=format&q=80" alt="暗物质" class="content-image">
+            <div class="content-body">
+              <div class="content-title">暗物质与暗能量</div>
+              <div class="content-meta">
+                <span>来自：天文学会</span>
+                <span>1周前</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="content-card">
+            <img src="https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=500&h=300&fit=crop&auto=format&q=80" alt="系外行星" class="content-image">
+            <div class="content-body">
+              <div class="content-title">系外行星的探索</div>
+              <div class="content-meta">
+                <span>系统推送</span>
+                <span>3天前</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 详情弹窗 -->
+    <div id="detail-modal" class="detail-modal">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <img id="modal-image" src="" alt="碎片详情">
+          <button class="modal-close"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+          <h2 id="modal-title" class="modal-title"></h2>
+          <div id="modal-meta" class="modal-meta">
+            <span id="modal-source"></span>
+            <span id="modal-time"></span>
+          </div>
+          <div id="modal-text" class="modal-content-text">
+            这是一段关于宇宙奥秘的探索内容。在浩瀚的宇宙中，我们不断寻找着生命的意义和人类的未来。通过对星辰、星系和宇宙法则的研究，我们逐渐揭开这个神秘世界的面纱。
+          </div>
+          <div class="modal-actions">
+            <button class="modal-button primary">
+              <i class="fas fa-bookmark"></i>
+              <span>收藏碎片</span>
+            </button>
+            <button class="modal-button secondary">
+              <i class="fas fa-share-alt"></i>
+              <span>分享</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- UI 覆盖层 -->
+    <div class="ui-overlay">
       <div class="page-header">
         <h1 class="page-title">星环</h1>
         <div>
@@ -174,110 +539,877 @@
         </div>
       </div>
       
-      <div class="flex justify-center my-2">
-        <div class="bg-gray-200 rounded-full px-4 py-1 flex space-x-2 dark:bg-gray-700">
-          <button class="bg-white rounded-full px-4 py-1 text-sm font-medium shadow-sm dark:bg-gray-600 dark:text-white">轨道视图</button>
-          <button class="text-sm font-medium px-4 py-1 text-gray-500">收藏视图</button>
-        </div>
-      </div>
-      
-      <!-- 轨道视图 -->
-      <div class="star-ring">
-        <div class="ring-container">
-          <div class="ring-orbit">
-            <div class="ring-center">
-              <i class="fas fa-user"></i>
-            </div>
-            <div class="star-fragment" style="background-color: #3b82f6;">A</div>
-            <div class="star-fragment" style="background-color: #ec4899;">B</div>
-            <div class="star-fragment" style="background-color: #10b981;">C</div>
-            <div class="star-fragment" style="background-color: #f59e0b;">D</div>
-            <div class="star-fragment" style="background-color: #8b5cf6;">E</div>
-            <div class="star-fragment" style="background-color: #ef4444;">F</div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 收藏视图 -->
-      <div class="collection-grid" style="display: none;">
-        <div class="collection-card">
-          <img src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=300&h=200&fit=crop&auto=format&q=80" alt="碎片" class="collection-image">
-          <div class="collection-content">
-            <div class="collection-title">宇宙的边缘有什么？</div>
-            <div class="collection-info">
-              <span>系统推送</span>
-              <span>2天前</span>
-            </div>
-          </div>
-        </div>
-        
-        <div class="collection-card">
-          <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=300&h=200&fit=crop&auto=format&q=80" alt="碎片" class="collection-image">
-          <div class="collection-content">
-            <div class="collection-title">黑洞的形成过程</div>
-            <div class="collection-info">
-              <span>来自：星辰阁</span>
-              <span>昨天</span>
-            </div>
-          </div>
-        </div>
-        
-        <div class="collection-card">
-          <img src="https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=300&h=200&fit=crop&auto=format&q=80" alt="碎片" class="collection-image">
-          <div class="collection-content">
-            <div class="collection-title">人类的未来在哪里？</div>
-            <div class="collection-info">
-              <span>系统推送</span>
-              <span>3小时前</span>
-            </div>
-          </div>
-        </div>
-        
-        <div class="collection-card">
-          <img src="https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=300&h=200&fit=crop&auto=format&q=80" alt="碎片" class="collection-image">
-          <div class="collection-content">
-            <div class="collection-title">太阳系的奇妙现象</div>
-            <div class="collection-info">
-              <span>来自：朋友</span>
-              <span>刚刚</span>
-            </div>
-          </div>
+      <!-- 视图切换器 -->
+      <div class="view-switcher">
+        <div class="view-switcher-inner">
+          <button id="universe-view-btn" class="view-btn active">宇宙视图</button>
+          <button id="content-view-btn" class="view-btn">内容视图</button>
         </div>
       </div>
     </div>
-
+    
+    <!-- 控制按钮 -->
+    <div class="controls-overlay">
+      <button id="zoom-in" class="control-btn"><i class="fas fa-plus"></i></button>
+      <button id="zoom-out" class="control-btn"><i class="fas fa-minus"></i></button>
+      <button id="reset-view" class="control-btn"><i class="fas fa-home"></i></button>
+    </div>
+    
+    <!-- 提示框 -->
+    <div id="tooltip" class="tooltip"></div>
+    
+    <!-- 星球发光效果 -->
+    <div class="planet-glow"></div>
   </div>
 
+  <!-- 引入 Three.js -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/loaders/GLTFLoader.js"></script>
+
   <script>
-    // 切换视图
-    document.querySelectorAll('.bg-gray-200 button').forEach((btn, index) => {
-      btn.addEventListener('click', () => {
-        // 更新按钮样式
-        document.querySelectorAll('.bg-gray-200 button').forEach(b => {
-          b.classList.remove('bg-white', 'shadow-sm', 'dark:bg-gray-600');
-          b.classList.add('text-gray-500');
-        });
-        btn.classList.add('bg-white', 'shadow-sm', 'dark:bg-gray-600', 'dark:text-white');
-        btn.classList.remove('text-gray-500');
-        
-        // 切换视图
-        const starRing = document.querySelector('.star-ring');
-        const collectionGrid = document.querySelector('.collection-grid');
-        
-        if (index === 0) {
-          starRing.style.display = 'block';
-          collectionGrid.style.display = 'none';
-        } else {
-          starRing.style.display = 'none';
-          collectionGrid.style.display = 'grid';
-        }
-      });
+    // 碎片数据
+    const fragmentsData = [
+      { 
+        id: 1, 
+        title: "宇宙的边缘有什么？", 
+        source: "系统推送", 
+        time: "2天前", 
+        color: 0x3b82f6,
+        image: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&h=500&fit=crop&auto=format&q=80",
+        content: "宇宙边缘是个谜。从可观测宇宙的边界来看，我们能观察到的最远距离约为460亿光年。随着宇宙持续膨胀，更多的未知领域被揭示。目前科学家认为，宇宙可能是无边无际的，或者可能具有某种非传统的拓扑结构，如同一个高维环面。对宇宙边缘的研究是现代宇宙学的核心问题之一。"
+      },
+      { 
+        id: 2, 
+        title: "黑洞的形成过程", 
+        source: "来自：星辰阁", 
+        time: "昨天", 
+        color: 0xec4899,
+        image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=500&fit=crop&auto=format&q=80",
+        content: "黑洞形成于大质量恒星死亡时的壮观引力坍缩。当一颗质量超过太阳25倍的恒星耗尽核燃料后，核心开始坍塌。引力压力变得如此之大，以至于任何物质，甚至光都无法逃脱。这种极端压缩创造了时空的奇点，周围被事件视界包围。还有更大的超大质量黑洞，质量可达数十亿倍太阳质量，它们如何形成仍是天文学的一大谜团。"
+      },
+      { 
+        id: 3, 
+        title: "人类的未来在哪里？", 
+        source: "系统推送", 
+        time: "3小时前", 
+        color: 0x10b981,
+        image: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=800&h=500&fit=crop&auto=format&q=80",
+        content: "人类的未来或许在群星之间。随着地球资源的有限性和潜在的全球性威胁，星际移民可能成为人类文明持续生存的关键。从火星殖民到开发小行星带资源，再到寻找适宜居住的系外行星，人类的太空探索已经迈出了坚实的步伐。在未来的几个世纪里，我们可能会见证太阳系内的人类殖民地和向更远恒星的探索任务。"
+      },
+      { 
+        id: 4, 
+        title: "太阳系的奇妙现象", 
+        source: "来自：朋友", 
+        time: "刚刚", 
+        color: 0xf59e0b,
+        image: "https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=800&h=500&fit=crop&auto=format&q=80",
+        content: "太阳系充满了令人惊叹的奇观。从土星华丽的环系到木星的大红斑风暴，从金星的超高压大气到海王星的超音速风暴。太阳系的每个角落都隐藏着独特的秘密。尤其令人着迷的是，在表面冰冻的卫星如木卫二和土卫六下，可能存在着液态海洋，这使它们成为寻找太阳系外生命的热门候选地。"
+      },
+      { 
+        id: 5, 
+        title: "星际旅行的可能性", 
+        source: "系统推送", 
+        time: "5天前", 
+        color: 0x8b5cf6,
+        image: "https://images.unsplash.com/photo-1502651664694-5972cec1fef3?w=800&h=500&fit=crop&auto=format&q=80",
+        content: "星际旅行面临着巨大的挑战，但并非不可能。从理论上讲，曲速引擎可以通过弯曲时空来实现超光速航行。实际上，核聚变推进、光帆和星际拉姆喷气式飞行器等技术已经在研究中。尽管技术障碍依然存在，但随着人类对量子物理和高能物理的深入理解，星际旅行可能会在下个世纪变为可能。"
+      },
+      { 
+        id: 6, 
+        title: "暗物质与暗能量", 
+        source: "来自：天文学会", 
+        time: "1周前", 
+        color: 0xef4444,
+        image: "https://images.unsplash.com/photo-1465101162946-4377e57745c3?w=800&h=500&fit=crop&auto=format&q=80",
+        content: "宇宙的95%由我们无法直接探测的暗物质和暗能量组成。暗物质不发光也不吸收光，但通过引力影响可见物质的运动。暗能量则是推动宇宙加速膨胀的神秘力量。科学家们正在通过多种实验如大型强子对撞机和暗物质探测器来寻找这些隐藏成分的直接证据，这可能会彻底改变我们对宇宙基本构成的理解。"
+      },
+      { 
+        id: 7, 
+        title: "系外行星的探索", 
+        source: "系统推送", 
+        time: "3天前", 
+        color: 0x06b6d4,
+        image: "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&h=500&fit=crop&auto=format&q=80",
+        content: "自1995年发现第一颗系外行星以来，天文学家已确认了超过4000颗围绕其他恒星运行的行星。这些发现显示宇宙中可能存在数十亿颗类地行星。目前，科学家正在寻找位于宜居带上可能拥有液态水的行星。下一代望远镜如詹姆斯·韦布将能够分析这些遥远世界的大气，寻找生命存在的生物标记。"
+      },
+      { 
+        id: 8, 
+        title: "银河系的结构", 
+        source: "来自：天文台", 
+        time: "6小时前", 
+        color: 0x84cc16,
+        image: "https://images.unsplash.com/photo-1506703719100-a0b3a3c589c0?w=800&h=500&fit=crop&auto=format&q=80",
+        content: "我们的银河系是一个宏伟的旋涡星系，直径约10万光年，包含了2000-4000亿颗恒星。它由一个核心球状结构、四条主要旋臂和一个横贯中心的棒状结构组成。我们的太阳位于猎户臂上，距离银河中心约2.6万光年。银河中心有一个质量为太阳质量400万倍的超大质量黑洞，名为人马座A*。整个星系缓慢旋转，在银河外缘完成一次公转需要约2.5亿年。"
+      }
+    ];
+    
+    // 初始化变量
+    let scene, camera, renderer, controls;
+    let centerPlanet;
+    let fragmentObjects = [];
+    let fragmentsGroup;
+    let stars;
+    let raycaster, mouse;
+    let currentView = 'universe'; // 默认视图
+    let detailModal;
+    let focusedFragment = null;
+    let planetGlow;
+    let nebulae = [];
+    
+    init();
+    animate();
+    
+    // 视图切换
+    document.getElementById('universe-view-btn').addEventListener('click', () => {
+      switchView('universe');
     });
+    
+    document.getElementById('content-view-btn').addEventListener('click', () => {
+      switchView('content');
+    });
+    
+    // 关闭详情弹窗事件
+    document.querySelector('.modal-close').addEventListener('click', () => {
+      closeDetailModal();
+    });
+    
+    // 点击背景关闭弹窗
+    document.querySelector('.modal-backdrop').addEventListener('click', () => {
+      closeDetailModal();
+    });
+    
+    function switchView(viewType) {
+      // 更新按钮状态
+      document.getElementById('universe-view-btn').classList.toggle('active', viewType === 'universe');
+      document.getElementById('content-view-btn').classList.toggle('active', viewType === 'content');
+      
+      // 显示/隐藏相应视图
+      const sceneContainer = document.getElementById('scene-container');
+      const contentView = document.getElementById('content-view');
+      const controlsOverlay = document.querySelector('.controls-overlay');
+      
+      if (viewType === 'universe') {
+        sceneContainer.style.display = 'block';
+        contentView.style.display = 'none';
+        controlsOverlay.style.display = 'flex';
+        currentView = 'universe';
+      } else {
+        sceneContainer.style.display = 'none';
+        contentView.style.display = 'block';
+        controlsOverlay.style.display = 'none';
+        currentView = 'content';
+      }
+    }
+    
+    function init() {
+      // 初始化详情弹窗
+      detailModal = document.getElementById('detail-modal');
+      planetGlow = document.querySelector('.planet-glow');
+      planetGlow.style.display = 'none';
+      
+      // 创建场景
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x000915);
+      
+      // 创建相机
+      camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 10000);
+      camera.position.set(0, 200, 400);
+      
+      // 创建渲染器
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      document.getElementById('scene-container').appendChild(renderer.domElement);
+      
+      // 创建光源
+      const ambientLight = new THREE.AmbientLight(0x333333);
+      scene.add(ambientLight);
+      
+      const pointLight = new THREE.PointLight(0xffffff, 1, 1000);
+      pointLight.position.set(200, 200, 200);
+      pointLight.castShadow = true;
+      pointLight.shadow.mapSize.width = 1024;
+      pointLight.shadow.mapSize.height = 1024;
+      scene.add(pointLight);
+      
+      // 添加辅助光源，使场景更明亮
+      const hemisphereLight = new THREE.HemisphereLight(0x606060, 0x404040, 0.6);
+      scene.add(hemisphereLight);
+      
+      // 创建轨道控制
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.screenSpacePanning = false;
+      controls.minDistance = 150;
+      controls.maxDistance = 2000;
+      controls.maxPolarAngle = Math.PI / 1.5;
+      
+      // 初始化射线追踪和鼠标
+      raycaster = new THREE.Raycaster();
+      mouse = new THREE.Vector2();
+      
+      // 创建宇宙背景
+      createStarfield();
+      
+      // 创建中心行星
+      createCenterPlanet();
+      
+      // 创建碎片组
+      fragmentsGroup = new THREE.Group();
+      scene.add(fragmentsGroup);
+      
+      // 创建碎片
+      createFragments();
+      
+      // 窗口调整大小事件监听
+      window.addEventListener('resize', onWindowResize, false);
+      
+      // 鼠标移动事件监听
+      window.addEventListener('mousemove', onMouseMove, false);
+      
+      // 鼠标点击事件监听
+      window.addEventListener('click', onMouseClick, false);
+      
+      // 控制按钮事件监听
+      document.getElementById('zoom-in').addEventListener('click', () => {
+        controls.dollyIn(1.2);
+      });
+      
+      document.getElementById('zoom-out').addEventListener('click', () => {
+        controls.dollyOut(1.2);
+      });
+      
+      document.getElementById('reset-view').addEventListener('click', resetCamera);
+      
+      // 为内容视图中的卡片添加点击事件
+      const contentCards = document.querySelectorAll('.content-card');
+      contentCards.forEach((card, index) => {
+        card.addEventListener('click', () => {
+          // 切换到宇宙视图并聚焦对应的碎片
+          switchView('universe');
+          setTimeout(() => {
+            focusOnFragment(fragmentObjects[index]);
+          }, 500);
+        });
+      });
+    }
+    
+    function createStarfield() {
+      // 创建小星星
+      const starsGeometry = new THREE.BufferGeometry();
+      const starsMaterial = new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 1.2,
+        transparent: true
+      });
+      
+      const starsVertices = [];
+      for (let i = 0; i < 15000; i++) {
+        const x = THREE.MathUtils.randFloatSpread(4000);
+        const y = THREE.MathUtils.randFloatSpread(4000);
+        const z = THREE.MathUtils.randFloatSpread(4000);
+        starsVertices.push(x, y, z);
+      }
+      
+      starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsVertices, 3));
+      stars = new THREE.Points(starsGeometry, starsMaterial);
+      scene.add(stars);
+      
+      // 添加星云
+      for (let i = 0; i < 8; i++) {
+        const nebula = createNebula();
+        nebula.position.set(
+          THREE.MathUtils.randFloatSpread(2500),
+          THREE.MathUtils.randFloatSpread(2500),
+          THREE.MathUtils.randFloatSpread(2500)
+        );
+        nebulae.push(nebula);
+        scene.add(nebula);
+      }
+      
+      // 添加远处的星系
+      for (let i = 0; i < 5; i++) {
+        const galaxyGeometry = new THREE.CircleGeometry(100 + Math.random() * 150, 64);
+        const galaxyMaterial = new THREE.MeshBasicMaterial({
+          map: createGalaxyTexture(),
+          transparent: true,
+          opacity: 0.6,
+          side: THREE.DoubleSide
+        });
+        const galaxy = new THREE.Mesh(galaxyGeometry, galaxyMaterial);
+        
+        // 随机位置和旋转
+        galaxy.position.set(
+          THREE.MathUtils.randFloatSpread(3000),
+          THREE.MathUtils.randFloatSpread(3000),
+          THREE.MathUtils.randFloatSpread(3000)
+        );
+        galaxy.rotation.set(
+          Math.random() * Math.PI,
+          Math.random() * Math.PI,
+          Math.random() * Math.PI
+        );
+        
+        scene.add(galaxy);
+      }
+    }
+    
+    function createGalaxyTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 512;
+      const context = canvas.getContext('2d');
+      
+      // 创建径向渐变
+      const gradient = context.createRadialGradient(
+        256, 256, 0,
+        256, 256, 256
+      );
+      
+      // 随机选择星系颜色
+      const galaxyColors = [
+        ['rgba(41, 121, 255, 1)', 'rgba(41, 121, 255, 0.3)', 'rgba(41, 121, 255, 0)'],
+        ['rgba(255, 41, 117, 1)', 'rgba(255, 41, 117, 0.3)', 'rgba(255, 41, 117, 0)'],
+        ['rgba(255, 241, 41, 1)', 'rgba(255, 241, 41, 0.3)', 'rgba(255, 241, 41, 0)'],
+        ['rgba(141, 41, 255, 1)', 'rgba(141, 41, 255, 0.3)', 'rgba(141, 41, 255, 0)']
+      ];
+      
+      const colorSet = galaxyColors[Math.floor(Math.random() * galaxyColors.length)];
+      
+      gradient.addColorStop(0, colorSet[0]);
+      gradient.addColorStop(0.5, colorSet[1]);
+      gradient.addColorStop(1, colorSet[2]);
+      
+      context.fillStyle = gradient;
+      context.fillRect(0, 0, 512, 512);
+      
+      // 添加星点
+      for (let i = 0; i < 200; i++) {
+        const x = Math.random() * 512;
+        const y = Math.random() * 512;
+        const radius = Math.random() * 2;
+        
+        context.beginPath();
+        context.arc(x, y, radius, 0, Math.PI * 2);
+        context.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        context.fill();
+      }
+      
+      const texture = new THREE.CanvasTexture(canvas);
+      return texture;
+    }
+    
+    function createNebula() {
+      const particlesCount = 800;
+      const geometry = new THREE.BufferGeometry();
+      const positions = new Float32Array(particlesCount * 3);
+      const colors = new Float32Array(particlesCount * 3);
+      
+      const color = new THREE.Color();
+      const nebulaColors = [0x3b82f6, 0x8b5cf6, 0xec4899, 0x10b981, 0xf59e0b];
+      const nebulaColor = nebulaColors[Math.floor(Math.random() * nebulaColors.length)];
+      color.setHex(nebulaColor);
+      
+      const size = 150 + Math.random() * 250;
+      
+      for (let i = 0; i < particlesCount; i++) {
+        const i3 = i * 3;
+        positions[i3] = (Math.random() - 0.5) * size;
+        positions[i3 + 1] = (Math.random() - 0.5) * size;
+        positions[i3 + 2] = (Math.random() - 0.5) * size;
+        
+        const alpha = Math.random();
+        colors[i3] = color.r * alpha;
+        colors[i3 + 1] = color.g * alpha;
+        colors[i3 + 2] = color.b * alpha;
+      }
+      
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      
+      const material = new THREE.PointsMaterial({
+        size: 3,
+        transparent: true,
+        opacity: 0.8,
+        vertexColors: true,
+        blending: THREE.AdditiveBlending
+      });
+      
+      return new THREE.Points(geometry, material);
+    }
+    
+    function createCenterPlanet() {
+      // 创建中心行星
+      const geometryCore = new THREE.SphereGeometry(40, 64, 64);
+      
+      // 创建自定义着色器材质以添加发光效果
+      const materialCore = new THREE.MeshPhongMaterial({
+        color: 0x3b82f6,
+        emissive: 0x0f4694,
+        shininess: 30,
+        transparent: true,
+        opacity: 0.95
+      });
+      
+      centerPlanet = new THREE.Mesh(geometryCore, materialCore);
+      centerPlanet.castShadow = true;
+      centerPlanet.receiveShadow = true;
+      scene.add(centerPlanet);
+      
+      // 添加大气层效果
+      const atmosphereGeometry = new THREE.SphereGeometry(50, 64, 64);
+      const atmosphereMaterial = new THREE.MeshPhongMaterial({
+        color: 0x72b4ff,
+        transparent: true,
+        opacity: 0.15,
+        side: THREE.BackSide
+      });
+      const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+      centerPlanet.add(atmosphere);
+      
+      // 添加辉光层
+      const glowGeometry = new THREE.SphereGeometry(55, 64, 64);
+      const glowMaterial = new THREE.MeshBasicMaterial({
+        color: 0x3b82f6,
+        transparent: true,
+        opacity: 0.1,
+        side: THREE.BackSide
+      });
+      const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+      centerPlanet.add(glow);
+      
+      // 添加轨道环
+      for (let i = 0; i < 3; i++) {
+        const ringGeometry = new THREE.RingGeometry(80 + i * 100, 82 + i * 100, 128);
+        const ringMaterial = new THREE.MeshBasicMaterial({
+          color: 0x3b82f6,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.2
+        });
+        const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+        ring.rotation.x = Math.PI / 2;
+        scene.add(ring);
+        
+        // 添加轨道上的微小粒子
+        const particlesCount = 300;
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesPositions = new Float32Array(particlesCount * 3);
+        
+        const radius = 81 + i * 100;
+        for (let j = 0; j < particlesCount; j++) {
+          const angle = (j / particlesCount) * Math.PI * 2;
+          particlesPositions[j * 3] = Math.cos(angle) * radius;
+          particlesPositions[j * 3 + 1] = (Math.random() - 0.5) * 2;
+          particlesPositions[j * 3 + 2] = Math.sin(angle) * radius;
+        }
+        
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(particlesPositions, 3));
+        
+        const particlesMaterial = new THREE.PointsMaterial({
+          color: 0x72b4ff,
+          size: 1,
+          transparent: true,
+          opacity: 0.8,
+          blending: THREE.AdditiveBlending
+        });
+        
+        const ringParticles = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(ringParticles);
+      }
+    }
+    
+    function createFragments() {
+      // 为每个碎片数据创建3D对象
+      fragmentsData.forEach((fragment, index) => {
+        // 计算轨道半径和位置
+        const orbitRadius = 150 + Math.floor(index / 4) * 100;
+        const angle = (index % 4) * (Math.PI / 2) + Math.random() * 0.5;
+        
+        // 创建碎片几何体 - 使用更复杂的几何体
+        let geometry;
+        const geometryType = Math.floor(Math.random() * 4);
+        
+        switch(geometryType) {
+          case 0:
+            geometry = new THREE.TetrahedronGeometry(15, 1); // 四面体
+            break;
+          case 1:
+            geometry = new THREE.OctahedronGeometry(15, 1); // 八面体
+            break;
+          case 2:
+            geometry = new THREE.IcosahedronGeometry(15, 0); // 二十面体
+            break;
+          case 3:
+            geometry = new THREE.DodecahedronGeometry(15, 0); // 十二面体
+            break;
+        }
+        
+        // 创建材质
+        const material = new THREE.MeshPhongMaterial({
+          color: fragment.color,
+          emissive: new THREE.Color(fragment.color).multiplyScalar(0.3),
+          shininess: 50,
+          transparent: true,
+          opacity: 0.9,
+          flatShading: true // 使用平面着色以增强晶体感
+        });
+        
+        // 创建网格
+        const fragmentMesh = new THREE.Mesh(geometry, material);
+        fragmentMesh.castShadow = true;
+        fragmentMesh.receiveShadow = true;
+        
+        // 设置位置
+        fragmentMesh.position.x = Math.cos(angle) * orbitRadius;
+        fragmentMesh.position.z = Math.sin(angle) * orbitRadius;
+        fragmentMesh.position.y = Math.sin(index * 0.5) * 30;
+        
+        // 随机旋转
+        fragmentMesh.rotation.x = Math.random() * Math.PI;
+        fragmentMesh.rotation.y = Math.random() * Math.PI;
+        fragmentMesh.rotation.z = Math.random() * Math.PI;
+        
+        // 添加轨迹线
+        const orbitCurve = new THREE.EllipseCurve(
+          0, 0,
+          orbitRadius, orbitRadius,
+          0, 2 * Math.PI,
+          false,
+          0
+        );
+        
+        const orbitPoints = orbitCurve.getPoints(100);
+        const orbitGeometry = new THREE.BufferGeometry().setFromPoints(orbitPoints);
+        
+        const orbitMaterial = new THREE.LineBasicMaterial({
+          color: new THREE.Color(fragment.color).multiplyScalar(0.5),
+          transparent: true,
+          opacity: 0.3
+        });
+        
+        const orbitLine = new THREE.Line(orbitGeometry, orbitMaterial);
+        orbitLine.rotation.x = Math.PI / 2;
+        orbitLine.position.y = fragmentMesh.position.y;
+        scene.add(orbitLine);
+        
+        // 添加光晕
+        const glowGeometry = new THREE.SphereGeometry(20, 32, 32);
+        const glowMaterial = new THREE.MeshBasicMaterial({
+          color: fragment.color,
+          transparent: true,
+          opacity: 0.15,
+          side: THREE.BackSide
+        });
+        const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+        fragmentMesh.add(glow);
+        
+        // 添加小粒子效果
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 30;
+        const particlesPositions = new Float32Array(particlesCount * 3);
+        
+        for (let i = 0; i < particlesCount; i++) {
+          const theta = Math.random() * Math.PI * 2;
+          const phi = Math.random() * Math.PI;
+          const radius = 20 + Math.random() * 10;
+          
+          particlesPositions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+          particlesPositions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+          particlesPositions[i * 3 + 2] = radius * Math.cos(phi);
+        }
+        
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(particlesPositions, 3));
+        
+        const particlesMaterial = new THREE.PointsMaterial({
+          color: fragment.color,
+          size: 1.5,
+          transparent: true,
+          opacity: 0.8,
+          blending: THREE.AdditiveBlending
+        });
+        
+        const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+        fragmentMesh.add(particles);
+        
+        // 保存碎片数据
+        fragmentMesh.userData = fragment;
+        
+        // 为碎片添加动画属性
+        fragmentMesh.userData.initialY = fragmentMesh.position.y;
+        fragmentMesh.userData.rotationSpeed = {
+          x: 0.005 + Math.random() * 0.01,
+          y: 0.005 + Math.random() * 0.01,
+          z: 0.005 + Math.random() * 0.01
+        };
+        fragmentMesh.userData.orbitSpeed = 0.002 / (1 + Math.floor(index / 4) * 0.5);
+        fragmentMesh.userData.orbitRadius = orbitRadius;
+        
+        // 添加到碎片组
+        fragmentsGroup.add(fragmentMesh);
+        fragmentObjects.push(fragmentMesh);
+      });
+    }
+    
+    function animate() {
+      requestAnimationFrame(animate);
+      
+      // 只在宇宙视图中渲染
+      if (currentView === 'universe') {
+        // 旋转碎片
+        fragmentObjects.forEach((fragment) => {
+          // 围绕中心行星旋转
+          if (!fragment.userData.focused) {
+            const orbitSpeed = fragment.userData.orbitSpeed;
+            const orbitRadius = fragment.userData.orbitRadius;
+            const angle = Math.atan2(fragment.position.z, fragment.position.x) + orbitSpeed;
+            
+            fragment.position.x = Math.cos(angle) * orbitRadius;
+            fragment.position.z = Math.sin(angle) * orbitRadius;
+            
+            // 上下浮动
+            fragment.position.y = fragment.userData.initialY + Math.sin(Date.now() * 0.001 + fragment.id) * 5;
+            
+            // 自转
+            fragment.rotation.x += fragment.userData.rotationSpeed.x;
+            fragment.rotation.y += fragment.userData.rotationSpeed.y;
+            fragment.rotation.z += fragment.userData.rotationSpeed.z;
+          }
+        });
+        
+        // 旋转中心行星
+        centerPlanet.rotation.y += 0.005;
+        
+        // 旋转星空
+        stars.rotation.y += 0.0001;
+        
+        // 星云缓慢旋转
+        nebulae.forEach((nebula, i) => {
+          const time = Date.now() * 0.0001;
+          nebula.rotation.x = Math.sin(time + i) * 0.2;
+          nebula.rotation.y = Math.cos(time + i * 0.5) * 0.2;
+        });
+        
+        // 更新控制器
+        controls.update();
+        
+        // 更新发光效果位置
+        if (focusedFragment) {
+          const screenPosition = toScreenPosition(focusedFragment, camera);
+          planetGlow.style.left = (screenPosition.x - 60) + 'px';
+          planetGlow.style.top = (screenPosition.y - 60) + 'px';
+        }
+        
+        // 渲染场景
+        renderer.render(scene, camera);
+      }
+    }
+    
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+    
+    function onMouseMove(event) {
+      // 仅在宇宙视图中启用
+      if (currentView !== 'universe') return;
+      
+      // 计算鼠标位置
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+      
+      // 射线投射
+      raycaster.setFromCamera(mouse, camera);
+      
+      // 检查碎片相交
+      const intersects = raycaster.intersectObjects(fragmentObjects);
+      
+      if (intersects.length > 0) {
+        const fragment = intersects[0].object;
+        
+        // 高亮显示
+        if (!fragment.userData.focused) {
+          fragment.material.emissive = new THREE.Color(fragment.userData.color).multiplyScalar(0.5);
+        }
+        
+        // 显示提示框
+        const tooltip = document.getElementById('tooltip');
+        tooltip.innerHTML = `
+          <div style="font-weight: bold;">${fragment.userData.title}</div>
+          <div style="font-size: 12px; opacity: 0.8;">${fragment.userData.source} · ${fragment.userData.time}</div>
+        `;
+        tooltip.style.display = 'block';
+        tooltip.style.left = event.clientX + 10 + 'px';
+        tooltip.style.top = event.clientY + 10 + 'px';
+        
+        document.body.style.cursor = 'pointer';
+      } else {
+        // 取消高亮
+        fragmentObjects.forEach(fragment => {
+          if (!fragment.userData.focused) {
+            fragment.material.emissive = new THREE.Color(fragment.userData.color).multiplyScalar(0.3);
+          }
+        });
+        
+        // 隐藏提示框
+        document.getElementById('tooltip').style.display = 'none';
+        document.body.style.cursor = 'default';
+      }
+    }
+    
+    function onMouseClick(event) {
+      // 仅在宇宙视图中启用
+      if (currentView !== 'universe') return;
+      
+      // 射线投射
+      raycaster.setFromCamera(mouse, camera);
+      
+      // 检查碎片相交
+      const intersects = raycaster.intersectObjects(fragmentObjects);
+      
+      if (intersects.length > 0) {
+        const fragment = intersects[0].object;
+        focusOnFragment(fragment);
+      }
+    }
+    
+    function focusOnFragment(fragment) {
+      // 停止所有碎片的聚焦状态
+      resetFocusedFragments();
+      
+      // 标记当前碎片为聚焦
+      fragment.userData.focused = true;
+      focusedFragment = fragment;
+      
+      // 显示发光效果
+      planetGlow.style.display = 'block';
+      const screenPosition = toScreenPosition(fragment, camera);
+      planetGlow.style.left = (screenPosition.x - 60) + 'px';
+      planetGlow.style.top = (screenPosition.y - 60) + 'px';
+      
+      // 设置碎片材质
+      fragment.material.emissive = new THREE.Color(fragment.userData.color).multiplyScalar(0.7);
+      
+      // 相机聚焦动画
+      const startPosition = camera.position.clone();
+      const startTarget = controls.target.clone();
+      
+      const endPosition = new THREE.Vector3().copy(fragment.position).normalize().multiplyScalar(250).add(fragment.position);
+      const endTarget = fragment.position.clone();
+      
+      // 计算相机位置以确保碎片在视野中央
+      const fragmentToCamera = new THREE.Vector3().subVectors(endPosition, endTarget).normalize();
+      endPosition.copy(fragment.position).add(fragmentToCamera.multiplyScalar(200));
+      
+      animateCamera(startPosition, endPosition, startTarget, endTarget, () => {
+        // 动画完成后显示详情弹窗
+        showDetailModal(fragment.userData);
+      });
+    }
+    
+    function resetFocusedFragments() {
+      // 重置所有碎片的状态
+      fragmentObjects.forEach(fragment => {
+        fragment.userData.focused = false;
+        fragment.material.emissive = new THREE.Color(fragment.userData.color).multiplyScalar(0.3);
+      });
+      
+      // 隐藏发光效果
+      planetGlow.style.display = 'none';
+      
+      // 清除当前焦点
+      focusedFragment = null;
+    }
+    
+    function closeDetailModal() {
+      detailModal.classList.remove('active');
+      resetFocusedFragments();
+      resetCamera();
+    }
+    
+    function showDetailModal(fragmentData) {
+      // 设置弹窗内容
+      document.getElementById('modal-image').src = fragmentData.image;
+      document.getElementById('modal-title').textContent = fragmentData.title;
+      document.getElementById('modal-source').textContent = fragmentData.source;
+      document.getElementById('modal-time').textContent = fragmentData.time;
+      document.getElementById('modal-text').textContent = fragmentData.content;
+      
+      // 显示弹窗
+      detailModal.classList.add('active');
+    }
+    
+    function animateCamera(startPos, endPos, startTarget, endTarget, callback) {
+      const duration = 2000; // 动画持续时间（毫秒）
+      const startTime = Date.now();
+      
+      function update() {
+        const elapsedTime = Date.now() - startTime;
+        const progress = Math.min(elapsedTime / duration, 1);
+        
+        // 使用缓动函数使动画更平滑
+        const easeProgress = easeOutCubic(progress);
+        
+        // 插值计算当前位置
+        camera.position.lerpVectors(startPos, endPos, easeProgress);
+        controls.target.lerpVectors(startTarget, endTarget, easeProgress);
+        controls.update();
+        
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        } else if (callback) {
+          callback();
+        }
+      }
+      
+      update();
+    }
+    
+    function easeOutCubic(x) {
+      return 1 - Math.pow(1 - x, 3);
+    }
+    
+    function resetCamera() {
+      const startPosition = camera.position.clone();
+      const startTarget = controls.target.clone();
+      
+      const endPosition = new THREE.Vector3(0, 200, 400);
+      const endTarget = new THREE.Vector3(0, 0, 0);
+      
+      animateCamera(startPosition, endPosition, startTarget, endTarget);
+    }
+    
+    // 将3D对象位置转换为屏幕位置
+    function toScreenPosition(obj, camera) {
+      const vector = new THREE.Vector3();
+      
+      // 获取对象的世界位置
+      obj.updateWorldMatrix(true, false);
+      vector.setFromMatrixPosition(obj.matrixWorld);
+      
+      // 转换为标准化设备坐标
+      vector.project(camera);
+      
+      // 转换为屏幕坐标
+      const widthHalf = window.innerWidth / 2;
+      const heightHalf = window.innerHeight / 2;
+      
+      return {
+        x: (vector.x * widthHalf) + widthHalf,
+        y: -(vector.y * heightHalf) + heightHalf
+      };
+    }
     
     // 接收主页面的暗色模式切换消息
     window.addEventListener('message', function(event) {
       if (event.data === 'toggle-theme') {
-        document.body.classList.toggle('dark-mode');
+        // 对于Three.js场景，不需要切换暗色模式
+        // 因为我们的场景本身就是深色的
       }
     });
   </script>
